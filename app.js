@@ -1,4 +1,3 @@
-
 import { messages } from './messages.js';
 
 const loginSection = document.getElementById('login');
@@ -21,13 +20,9 @@ document.getElementById('loginBtn').onclick = () => {
   mainSection.classList.remove('hidden');
 };
 
-function shuffleArray(array) {
-  let shuffled = array.slice();
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
+function getRandomMessage() {
+  const index = Math.floor(Math.random() * messages.length);
+  return messages[index];
 }
 
 async function sendMessage(token, channelId, content) {
@@ -58,24 +53,20 @@ startBtn.onclick = async () => {
   if (!channelId) return alert("اكتب ID الروم");
 
   stop = false;
-  const messageQueue = shuffleArray(messages);
-  let index = 0;
 
   async function loopSend(token) {
-    while (!stop && index < messageQueue.length) {
-      const msg = `${messageQueue[index++]} ${mentions}`.trim();
+    while (!stop) {
+      const msg = `${getRandomMessage()} ${mentions}`.trim();
       await sendMessage(token, channelId, msg);
-      await new Promise(r => setTimeout(r, delay * tokens.length));
+      await new Promise(r => setTimeout(r, delay));
     }
   }
 
   tokens.forEach(token => loopSend(token));
-  logBox.innerText += `🚀 بدأ الإرسال باستخدام ${tokens.length} توكن.
-`;
+  logBox.innerText += `🚀 بدأ الإرسال باستخدام ${tokens.length} توكن.\n`;
 };
 
 stopBtn.onclick = () => {
   stop = true;
-  logBox.innerText += `⛔ تم إيقاف الإرسال.
-`;
+  logBox.innerText += `⛔ تم إيقاف الإرسال.\n`;
 };
